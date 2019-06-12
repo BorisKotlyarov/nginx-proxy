@@ -1,0 +1,10 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "node index"
+  },
+  "dependencies": {
+    "just-rest": "0.0.18-alpha"
+  }
+}

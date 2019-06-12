@@ -1,0 +1,69 @@
+version: '3'
+services:
+  proxy:
+    image: 'jwilder/nginx-proxy'
+    container_name: 'proxy'
+    restart: always
+    links:
+      - backend-test
+      - frontend
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - 'nginx-vhosts:/etc/nginx/vhost.d'
+      - 'nginx-config:/etc/nginx/conf.d'
+      - 'nginx-certs:/etc/nginx/certs'
+      - 'nginx-webroot:/usr/share/nginx/html'
+      - '/var/run/docker.sock:/tmp/docker.sock:ro'
+
+  letsencrypt:
+    image: 'jrcs/letsencrypt-nginx-proxy-companion'
+    container_name: 'letsencrypt'
+    volumes:
+      - '/var/run/docker.sock:/var/run/docker.sock:ro'
+      - 'nginx-vhosts:/etc/nginx/vhost.d'
+      - 'nginx-config:/etc/nginx/conf.d'
+      - 'nginx-certs:/etc/nginx/certs'
+      - 'nginx-webroot:/usr/share/nginx/html'
+    environment:
+      NGINX_DOCKER_GEN_CONTAINER: "nginx-gen"
+      NGINX_PROXY_CONTAINER: "nginx"
+
+  backend-test:
+    build: "./backend"
+    container_name: backend-test
+    restart: always
+    expose:
+      - 3002
+    environment:
+      VIRTUAL_HOST: api.app.local
+      VIRTUAL_PORT: 3002
+
+  frontend:
+    build: "./frontend"
+    container_name: frontend
+    restart: always
+    volumes:
+      - ./frontend/html:/usr/share/nginx/html
+    environment:
+      VIRTUAL_HOST: app.local
+
+#  app2:
+#    image: nginx
+#    container_name: app2
+#    environment:
+#      VIRTUAL_HOST: app2.example.com
+#      LETSENCRYPT_HOST: app2.example.com
+#      LETSENCRYPT_EMAIL: 'admin@example.com'
+
+volumes:
+  nginx-vhosts:
+  nginx-config:
+  nginx-certs:
+  nginx-webroot:
+
+networks:
+  default:
+    external:
+      name: nginx-proxy

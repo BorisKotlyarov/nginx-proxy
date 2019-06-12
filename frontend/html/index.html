@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<h1>Welcome</h1>
+<pre data-selector="result">loading...</pre>
+
+<script>
+
+    async function get(){
+        let selector =  document.querySelector('[data-selector="result"]');
+        selector.innerHTML = `loading...`;
+        const response = await fetch('http://api.app.local')
+        const json = await response.json()
+        selector.innerHTML = JSON.stringify(json, null, '\t');
+    }
+    get();
+    setInterval(get,10000)
+
+</script>
+
+</body>
+</html>
