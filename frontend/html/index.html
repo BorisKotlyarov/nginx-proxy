@@ -6,20 +6,58 @@
 </head>
 <body>
 
+<style>
+
+    * {
+        padding: 0;
+        margin: 0;
+    }
+
+    body {
+        padding-top: 4rem;
+    }
+
+    h1 {
+        padding: 1rem;
+        color: #fff;
+        background-color: black;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+    }
+
+    pre {
+        color: #45ff00;
+        border-left: 3px solid;
+        background-color: #222222;
+        padding: 1rem;
+    }
+
+</style>
+
 <h1>Welcome</h1>
 <pre data-selector="result">loading...</pre>
 
 <script>
 
-    async function get(){
-        let selector =  document.querySelector('[data-selector="result"]');
+    async function get() {
+        let selector = document.querySelector('[data-selector="result"]');
         selector.innerHTML = `loading...`;
-        const response = await fetch('http://api.app.local')
-        const json = await response.json()
-        selector.innerHTML = JSON.stringify(json, null, '\t');
+        let sleep = 10000;
+        try {
+            const response = await fetch('http://api.app.local')
+            const json = await response.json();
+            selector.innerHTML = JSON.stringify(json, null, '\t');
+        } catch (e) {
+            sleep = 60000;
+            selector.innerHTML = `Error: ${e.message}, sleep: ${sleep/1000}s.`;
+        }
+
+        setTimeout(get, sleep)
     }
+
     get();
-    setInterval(get,10000)
 
 </script>
 

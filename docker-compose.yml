@@ -34,6 +34,8 @@ services:
     build: "./backend"
     container_name: backend-test
     restart: always
+    volumes:
+      - ./backend/vhost.d/api.app.local_location:/etc/nginx/vhost.d/api.app.local.conf:ro
     expose:
       - 3002
     environment:
